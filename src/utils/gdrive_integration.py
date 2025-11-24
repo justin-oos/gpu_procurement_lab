@@ -1,20 +1,61 @@
-from typing import Dict
+from typing import Dict, Optional
 import json
 import os
+import io
+import logging
 
-# In a real scenario, we would use google-auth and google-api-python-client.
-# For this lab scaffold, we will simulate the "Connectivity" to GDrive
-# by writing to a local 'gdrive_sync' folder which acts as the mount point.
+import google.auth
+from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError
+from googleapiclient.http import MediaIoBaseUpload
+
+logger = logging.getLogger(__name__)
 
 
 class ReportGenerator:
-    def __init__(self):
-        self.sync_dir = "./gdrive_sync"
+    """
+    Handles uploading reports to Google Drive.
+    Uses Application Default Credentials (ADC) for authentication.
+    """
+
+    def __init__(self, folder_id: Optional[str] = None):
+        """
+        Initialize the ReportGenerator.
+
+        Args:
+            folder_id (str, optional): Google Drive folder ID where reports should be uploaded.
+                                      If None, uploads to the root of "My Drive".
+        """
+        self.folder_id = folder_id
+        self.sync_dir = "./gdrive_sync"  # Local backup directory
         os.makedirs(self.sync_dir, exist_ok=True)
+        self._service = None
+
+    def _get_drive_service(self):
+        """
+        Create and return a Google Drive API service instance.
+        Uses Application Default Credentials.
+        """
+        if self._service is not None:
+            return self._service
+
+        try:
+            # Use Application Default Credentials
+            credentials, project = google.auth.default(
+                scopes=['https://www.googleapis.com/auth/drive.file']
+            )
+
+            self._service = build('drive', 'v3', credentials=credentials)
+            logger.info("Successfully authenticated with Google Drive API")
+            return self._service
+
+        except Exception as e:
+            logger.error(f"Failed to authenticate with Google Drive: {e}")
+            raise
 
     def upload_report(self, filename: str, content: str, metadata: Dict = None) -> str:
         """
-        Simulates uploading the Executive Report to Google Drive.
+        Uploads the Executive Report to Google Drive.
 
         Args:
             filename (str): The name of the report file.
@@ -22,16 +63,128 @@ class ReportGenerator:
             metadata (Dict): Additional metadata (e.g., agent version).
 
         Returns:
-            str: Success message or error.
+            str: Success message with file ID or error message.
         """
-        # [cite: 24] sends this report to GDrive.
+        # Save a local backup first
         try:
-            file_path = os.path.join(self.sync_dir, filename)
-
-            with open(file_path, "w") as f:
-                f.write(f"--- METADATA ---\n{json.dumps(metadata)}\n----------------\n")
+            local_path = os.path.join(self.sync_dir, filename)
+            with open(local_path, "w") as f:
+                if metadata:
+                    f.write(f"--- METADATA ---\n{json.dumps(metadata, indent=2)}\n----------------\n\n")
                 f.write(content)
-
-            return f"SUCCESS: Report uploaded to GDrive (simulated at {file_path})"
+            logger.info(f"Local backup saved to {local_path}")
         except Exception as e:
-            return f"FAILURE: Could not upload report: {str(e)}"
+            logger.warning(f"Failed to save local backup: {e}")
+
+        # Try to upload to Google Drive
+        try:
+            service = self._get_drive_service()
+
+            # Prepare file content with metadata
+            full_content = content
+            if metadata:
+                full_content = f"--- METADATA ---\n{json.dumps(metadata, indent=2)}\n----------------\n\n{content}"
+
+            # Create file metadata
+            file_metadata = {
+                'name': filename,
+                'mimeType': 'text/markdown'
+            }
+
+            # If folder_id is specified, upload to that folder
+            if self.folder_id:
+                file_metadata['parents'] = [self.folder_id]
+
+            # Create media upload
+            media = MediaIoBaseUpload(
+                io.BytesIO(full_content.encode('utf-8')),
+                mimetype='text/markdown',
+                resumable=True
+            )
+
+            # Upload the file
+            file = service.files().create(
+                body=file_metadata,
+                media_body=media,
+                fields='id, name, webViewLink'
+            ).execute()
+
+            file_id = file.get('id')
+            web_link = file.get('webViewLink', 'N/A')
+
+            logger.info(f"Successfully uploaded to Google Drive: {filename} (ID: {file_id})")
+
+            return (
+                f"SUCCESS: Report uploaded to Google Drive\n"
+                f"  - File ID: {file_id}\n"
+                f"  - File Name: {filename}\n"
+                f"  - Web Link: {web_link}\n"
+                f"  - Local Backup: {local_path}"
+            )
+
+        except HttpError as error:
+            error_msg = f"Google Drive API error: {error}"
+            logger.error(error_msg)
+            return (
+                f"FAILURE: Could not upload to Google Drive ({error})\n"
+                f"  - Local backup available at: {local_path}"
+            )
+        except Exception as e:
+            error_msg = f"Unexpected error during upload: {str(e)}"
+            logger.error(error_msg)
+            return (
+                f"FAILURE: Could not upload report ({str(e)})\n"
+                f"  - Local backup available at: {local_path}"
+            )
+
+    def list_reports(self, max_results: int = 10) -> list:
+        """
+        List recent reports uploaded to Google Drive.
+
+        Args:
+            max_results (int): Maximum number of files to return.
+
+        Returns:
+            list: List of file metadata dictionaries.
+        """
+        try:
+            service = self._get_drive_service()
+
+            # Build query
+            query = "mimeType='text/markdown'"
+            if self.folder_id:
+                query += f" and '{self.folder_id}' in parents"
+
+            # Execute query
+            results = service.files().list(
+                q=query,
+                pageSize=max_results,
+                fields="files(id, name, createdTime, webViewLink)",
+                orderBy="createdTime desc"
+            ).execute()
+
+            files = results.get('files', [])
+            return files
+
+        except Exception as e:
+            logger.error(f"Failed to list reports: {e}")
+            return []
+
+    def delete_report(self, file_id: str) -> bool:
+        """
+        Delete a report from Google Drive.
+
+        Args:
+            file_id (str): The Google Drive file ID to delete.
+
+        Returns:
+            bool: True if successful, False otherwise.
+        """
+        try:
+            service = self._get_drive_service()
+            service.files().delete(fileId=file_id).execute()
+            logger.info(f"Successfully deleted file {file_id}")
+            return True
+        except Exception as e:
+            logger.error(f"Failed to delete file {file_id}: {e}")
+            return False

@@ -117,6 +117,9 @@ class ProjectConfig:
         secret_name="GPU_PROCUREMENT_API_URL",
     )
 
+    # Model Configuration
+    MODEL_NAME: str = _loader.get("MODEL_NAME", default="gemini-2.5-pro")
+
 
 # Singleton instance
 config = ProjectConfig()

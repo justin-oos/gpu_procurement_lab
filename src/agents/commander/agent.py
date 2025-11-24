@@ -9,6 +9,7 @@ from agents.logistics.agent import logistics_agent
 # Import the new File System Tools
 from tools.file_system import FileSystemTools
 from utils.gdrive_integration import ReportGenerator
+from utils.config import config
 
 # Initialize tools
 fs_tools = FileSystemTools(root_dir="./workspace")
@@ -27,17 +28,26 @@ Every time you find valid units or confirm a purchase, you MUST append a line to
 Format for CSV:
 timestamp, source, quantity, status, notes
 
-STRATEGY:
+STRATEGY (FOLLOW THIS EXACTLY):
 1. Initialize the 'procurement_tracker.csv' with a header if it doesn't exist (use write_file).
-2. Ask Inventory Agent to search. If 300 units found -> Append to CSV (Source: Internal, Status: Pending Legal).
-3. Ask Legal Agent to validate. If valid -> Update CSV (actually, append a new line confirming release).
-4. Ask Logistics Agent for spot purchase. -> Append to CSV (Source: Spot Market, Status: Ordered).
-5. Finally, read the CSV content to generate your Executive Report and upload it to GDrive.
+2. Ask Inventory Agent to search for H100 GPUs. Record findings in CSV.
+3. Ask Legal Agent to validate any quarantined units. Record status in CSV.
+4. Ask Logistics Agent for spot market pricing and availability. Record findings in CSV.
+5. WHEN YOU HAVE GATHERED ALL INFORMATION: Read the CSV file and generate your final Executive Report.
+6. Upload the report to GDrive using upload_report.
+7. IMMEDIATELY provide a final summary response to the user and STOP.
+
+CRITICAL TERMINATION RULES:
+- Once you have data from all three agents (Inventory, Legal, Logistics), you MUST move to step 5.
+- Do NOT keep asking follow-up questions indefinitely.
+- If an agent cannot provide specific information, accept their response and move on.
+- Your job is to coordinate and report, NOT to investigate every detail yourself.
+- After uploading the report, provide a concise summary and STOP.
 """
 
-commander_agent = Agent(
-    name="commander_agent",
-    model="gemini-3-pro-preview",
+root_agent = Agent(
+    name="root_agent",
+    model=config.MODEL_NAME,
     instruction=COMMANDER_SYSTEM_PROMPT,
     tools=[
         # Sub-Agents

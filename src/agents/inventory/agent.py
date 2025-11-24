@@ -35,7 +35,7 @@ CRITICAL RULES:
 
 inventory_agent = Agent(
     name="inventory_agent",
-    model="gemini-3-pro-preview",
+    model=config.MODEL_NAME,
     instruction=INVENTORY_SYSTEM_PROMPT,
     tools=[db_tools.explore_schema, db_tools.run_query],
 )
