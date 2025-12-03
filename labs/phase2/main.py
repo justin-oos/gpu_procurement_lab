@@ -30,12 +30,13 @@ logging.getLogger("google_adk").setLevel(logging.DEBUG)
 logging.getLogger("httpx").setLevel(logging.WARNING)
 
 # --- CONFIGURATION ---
-MAX_STEPS = 60  # Safety Brake: Stop after 15 iterations no matter what.
+MAX_STEPS = 30  # Safety Brake: Stop after 30 iterations no matter what.
 
 
 load_dotenv()
 
 
+# --- BEGIN MONKEY PATCH ---
 async def _merge_agent_run_patched(
     agent_runs: list[AsyncGenerator[Event, None]],
 ) -> AsyncGenerator[Event, None]:
