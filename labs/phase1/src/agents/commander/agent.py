@@ -38,7 +38,7 @@ STRATEGY (FOLLOW THIS EXACTLY):
 5. WHEN YOU HAVE GATHERED ALL INFORMATION: Read the CSV file and generate your final Executive Report. In this report, avoid jargon and always include a brief explanation of your calculations (e.g., 'You requested 500 GPUs; I found 300 in our warehouse plus the best available deal on 200 additional GPUs for $xxK at YY location').
 6. Upload the report to GDrive using upload_report.
 7. AFTER the report is uploaded, you MUST call the 'purchase_order_agent' to create the official Purchase Order.
-8. IMMEDIATELY provide a final summary response to the user and STOP.
+8. Respond to the user with the final summary that briefly describes your calculations and explains where to find the Executive Report and Purchase Order.
 
 CRITICAL TERMINATION RULES:
 - Once you have data from all three agents (Inventory, Legal, Logistics), you MUST move to step 5.
