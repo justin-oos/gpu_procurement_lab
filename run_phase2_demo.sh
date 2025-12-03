@@ -3,7 +3,8 @@
 # Configuration
 API_PORT=8080
 API_HOST="127.0.0.1"
-VENV_NAME="l400-env"
+PHASE_DIR="labs/phase2"
+VENV_DIR="$PHASE_DIR/.venv"
 
 # Colors for output
 GREEN='\033[0;32m'
@@ -11,20 +12,31 @@ BLUE='\033[0;34m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 
-echo -e "${BLUE}🚀 Starting Vertex AI L400 Lab 2 Demo Initialization...${NC}"
+echo -e "${BLUE}🚀 Starting Vertex AI L400 Lab 2 Demo Initialization for Phase 2...${NC}"
 
 # --- Step 1: Environment & Dependencies ---
 echo -e "\n${BLUE}[1/5] Checking Environment...${NC}"
 
 # Check if we are in the right directory
-if [ ! -f "pyproject.toml" ]; then
-    echo -e "${RED}❌ Error: pyproject.toml not found. Run this from the repo root.${NC}"
+if [ ! -d "$PHASE_DIR" ]; then
+    echo -e "${RED}❌ Error: Phase directory $PHASE_DIR not found. Run this from the repo root.${NC}"
     exit 1
 fi
 
+# Create and source the virtual environment
+if [ ! -d "$VENV_DIR" ]; then
+    echo "🐍 Creating Python virtual environment in $VENV_DIR..."
+    python3 -m venv $VENV_DIR
+fi
+source $VENV_DIR/bin/activate
+
+# Upgrade pip
+echo "🐍 Updating Python virtual environment in $VENV_DIR..."
+pip install --upgrade pip
+
 # Install dependencies in editable mode
 echo "📦 Installing package and dependencies..."
-pip install -e .
+pip install -e ./$PHASE_DIR
 pip install reportlab fastapi uvicorn # Ensure helper libs are present
 
 # --- Step 2: World Building (Data) ---
@@ -67,7 +79,7 @@ echo "---------------------------------------------------------------"
 
 
 # Run the main agent loop
-python main.py
+python $PHASE_DIR/main.py
 
 # --- Cleanup ---
 echo -e "\n${BLUE}🧹 Cleaning up...${NC}"

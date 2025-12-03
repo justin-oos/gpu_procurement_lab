@@ -96,7 +96,7 @@ _loader = ConfigLoader()
 class ProjectConfig:
     # Infrastructure
     PROJECT_ID: str = _loader._project_id
-    REGION: str = _loader.get("GOOGLE_CLOUD_REGION", "global")
+    REGION: str = _loader.get("GOOGLE_CLOUD_REGION", "us-central1")
 
     # BigQuery Assets
     DATASET_ID: str = _loader.get("BIGQUERY_DATASET", "gpu_procurement_db")

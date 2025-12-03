@@ -2,9 +2,10 @@ import asyncio
 import logging
 import os
 
-import dotenv
+from dotenv import load_dotenv
 import google.auth
 import vertexai
+from google import genai
 from agents.commander.agent import root_agent
 from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
@@ -21,6 +22,28 @@ logging.getLogger("httpx").setLevel(logging.WARNING)
 # --- CONFIGURATION ---
 MAX_STEPS = 30  # Safety Brake: Stop after 15 iterations no matter what.
 
+
+load_dotenv()
+
+
+PROJECT_ID = os.getenv("PROJECT_ID", "unset")
+LOCATION = os.getenv("LOCATION", "us-central1")
+
+
+vertexai.init(
+    project=PROJECT_ID,
+    location=LOCATION,
+)
+
+os.environ["GOOGLE_GENAI_USE_VERTEXAI"] = "1"
+os.environ["GOOGLE_CLOUD_PROJECT"] = PROJECT_ID
+os.environ["GOOGLE_CLOUD_LOCATION"] = LOCATION
+
+genai_client = genai.Client(
+    vertexai=True,
+    project=PROJECT_ID,
+    location=LOCATION,
+)
 
 async def call_agent_async():
     # Initialize the ADK runtime components
