@@ -102,7 +102,7 @@ If you still see permission errors after Option 1:
 2. Try revoking and re-authenticating:
    ```bash
    gcloud auth application-default revoke
-   gcloud auth application-default login --scopes=https://www.googleapis.com/auth/drive.file,https://www.googleapis.com/auth/cloud-platform
+   gcloud auth application-default login --scopes=https://www.googleapis.com/auth/drive.file,https://www.googleapis.com/auth/userinfo.email,https://www.googleapis.com/auth/cloud-platform
    ```
 
 3. Verify the Drive API is enabled:

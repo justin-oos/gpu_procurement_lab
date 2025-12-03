@@ -39,7 +39,7 @@ If you're running on Google Cloud Platform (Compute Engine, Cloud Run, etc.), AD
 For local development:
 
 ```bash
-gcloud auth application-default login --scopes=https://www.googleapis.com/auth/drive.file,https://www.googleapis.com/auth/cloud-platform
+gcloud auth application-default login --scopes=https://www.googleapis.com/auth/drive.file,https://www.googleapis.com/auth/userinfo.email,https://www.googleapis.com/auth/cloud-platform
 ```
 
 **Important:** You MUST include the `--scopes` parameter to grant Google Drive access. Without it, you'll get "insufficient permissions" errors.
