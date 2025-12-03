@@ -219,3 +219,5 @@ __marimo__/
 # Ignore env import
 base_env.sh
 api_logs.txt
+
+workspace
