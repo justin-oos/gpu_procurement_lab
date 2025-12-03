@@ -22,6 +22,7 @@ from google.adk.agents import Agent, SequentialAgent, ParallelAgent
 from google.adk.tools.tool_context import ToolContext
 
 from tools.file_system import FileSystemTools
+from utils.gdrive_integration import ReportGenerator
 from utils.config import config
 from agents.inventory.agent import inventory_agent
 from agents.legal.agent import legal_agent
@@ -32,6 +33,7 @@ load_dotenv()
 
 
 fs_tools = FileSystemTools(root_dir="./workspace")
+reporter = ReportGenerator()
 
 
 source_gpus_parallel_agent = ParallelAgent(
@@ -50,7 +52,7 @@ source_gpus_merge_agent = Agent(
     name="source_gpus_merge_agent",
     model=config.MODEL_NAME,
     instruction="""
-Your Goal: Append uncovered finding from DATA INPUTS into a CSV 'procurement_tracker.csv'.
+Your Goal: Consolidate information from DATA INPUTS into a CSV 'procurement_tracker.csv', then create and upload a report.
 
 SYSTEM OF RECORD:
 You have access to a local file system. You MUST maintain a file named 'procurement_tracker.csv'.
@@ -62,11 +64,15 @@ timestamp, source, quantity, status, notes
 STRATEGY (FOLLOW THIS EXACTLY):
 1. Initialize the 'procurement_tracker.csv' with a header if it doesn't exist (use write_file).
 2. Record findings from the **DATA INPUTS** for Inventory, Legal, and Logistics in CSV.
+3. Read the CSV file and generate your final Executive Report. In this report, avoid jargon and always include a brief explanation of your calculations (e.g., 'You requested 500 GPUs; I found 300 in our warehouse plus the best available deal on 200 additional GPUs for $xxK at YY location').
+4. Upload the report to GDrive using upload_report.
+5. Respond to the user with the final summary that briefly describes your calculations and explains where to find the Executive Report and Purchase Order.
 
 CRITICAL TERMINATION RULES:
 - Record all findings in CSV.
 - If an agent cannot provide specific information, accept their response and move on.
 - Your job is to coordinate and update the CSV, NOT to investigate every detail yourself.
+- After uploading the report, provide a concise summary and STOP.
 
 DATA INPUTS:
 
@@ -85,6 +91,8 @@ DATA INPUTS:
         fs_tools.write_file,
         fs_tools.append_to_log,
         fs_tools.list_files,
+        # Reporting
+        reporter.upload_report,
     ]
 )
 
