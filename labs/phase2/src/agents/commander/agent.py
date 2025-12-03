@@ -36,30 +36,21 @@ genai_client = genai.Client(
     location=LOCATION,
 )
 
-
-# Initialize tools
-fs_tools = FileSystemTools(root_dir="./workspace")
-reporter = ReportGenerator()
-
 COMMANDER_SYSTEM_PROMPT = """
 You are the Incident Commander for a Critical Supply Chain Crisis.
-You DO NOT execute tasks yourself. You DELEGATE to your sub-agents.
+You DELEGATE to your sub-agents and tools as needed.
 
-Your Goal: Find 500 H100 GPUs immediately.
+Your Goal: Find 500 H100 GPUs immediately and upload the report.
 
 SYSTEM OF RECORD:
 You have access to a local file system. You MUST maintain a file named 'procurement_tracker.csv'.
-Every time you find valid units or confirm a purchase, you MUST append a line to this file.
 
 Format for CSV:
 timestamp, source, quantity, status, notes
 
 STRATEGY (FOLLOW THIS EXACTLY):
-1. Initialize the 'procurement_tracker.csv' with a header if it doesn't exist (use write_file).
-2. Ask Source GPUs Agent to search for H100 GPUs. Record findings in CSV.
-3. Read the CSV file and generate your final Executive Report.
-4. Upload the report to GDrive using upload_report.
-5. IMMEDIATELY provide a final summary response to the user and STOP.
+1. Ask Source GPUs Agent to search for H100 GPUs.
+2. Respond to the user with the final summary that briefly describes your calculations and explains where to find the Executive Report and Purchase Order.
 
 CRITICAL TERMINATION RULES:
 - Once you have data from the Source GPUs Agent, then you MUST move to step 3.
@@ -74,13 +65,4 @@ root_agent = Agent(
     model=config.MODEL_NAME,
     instruction=COMMANDER_SYSTEM_PROMPT,
     sub_agents=[source_gpus_agent],
-    tools=[
-        # File System Capabilities (The "Pivot")
-        fs_tools.read_file,
-        fs_tools.write_file,
-        fs_tools.append_to_log,
-        fs_tools.list_files,
-        # Reporting
-        reporter.upload_report,
-    ],
 )
