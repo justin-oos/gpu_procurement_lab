@@ -118,7 +118,7 @@ class ProjectConfig:
     )
 
     # Model Configuration
-    MODEL_NAME: str = _loader.get("MODEL_NAME", default="gemini-2.5-pro")
+    MODEL_NAME: str = _loader.get("MODEL_NAME", default="gemini-3-pro-preview")
 
 
 # Singleton instance
