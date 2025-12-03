@@ -82,9 +82,7 @@ async def _merge_agent_run_patched(
                     yield event
                     # Signal to agent that it should generate next event.
                     resume_signal.set()
-        except GeneratorExit as e:
-            traceback.print_exc()
-            print(f"❌ Received ERROR: {e}")
+        except GeneratorExit:
             pass # Gracefully exit when the generator is closed.
 
 
