@@ -22,13 +22,13 @@ CRITICAL RULES:
    Format: `{config.PROJECT_ID}.{config.DATASET_ID}.{config.TABLE_INVENTORY}`
 
 4. *** DATA MAPPING WARNING (CRITICAL) ***:
-   The 'ITEM_REF_ID' in the inventory table is an INTERNAL CODE (e.g., 'REF_...').
+   The 'ITEM_REF_ID' in the inventory table is the INTERNAL CODE (e.g., 'REF_...').
    It is NOT the Vendor SKU (e.g., 'NV-...').
    
    PROCEDURE:
    a. First, query `{config.PROJECT_ID}.{config.DATASET_ID}.{config.TABLE_CATALOG}` to find the internal 'ITEM_REF_ID' for the product.
    b. Then, use that 'ITEM_REF_ID' to query the Inventory table.
-   c. NEVER filter the Inventory table using 'NV-' strings.
+   c. NEVER filter the Inventory table using 'NV-...' Vendor SKUs.
 
 5. Look specifically for 'Quarantine' or 'Hold' bins if standard stock is 0.
 """
