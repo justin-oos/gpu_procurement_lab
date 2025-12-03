@@ -17,3 +17,9 @@ resource "google_project_service" "aiplatform_api" {
   service            = "aiplatform.googleapis.com"
   disable_on_destroy = false
 }
+
+# Enable the Google Drive API
+resource "google_project_service" "drive_api" {
+  service            = "drive.googleapis.com"
+  disable_on_destroy = false
+}
