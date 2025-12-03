@@ -36,6 +36,9 @@ legal_agent = Agent(
     name="legal_agent",
     model=config.MODEL_NAME,
     instruction=LEGAL_SYSTEM_PROMPT,
+    description=(
+        "An agent checks legal information."
+    ),
     tools=[rag_tools.analyze_contract_clause],
     output_key="legal_agent_result",
 )

@@ -1,6 +1,16 @@
 import asyncio
 import logging
 import os
+import traceback
+
+# --- MONKEY PATCH ---
+# The following code is a temporary workaround for an issue in the google-adk library.
+# It prevents an unhandled exception when a ParallelAgent is used.
+# The issue is that a GeneratorExit is not handled in the _merge_agent_run function.
+# This patch wraps the while loop in a try...except GeneratorExit block.
+from typing import AsyncGenerator
+from google.adk.events.event import Event
+from google.adk.agents import parallel_agent
 
 from dotenv import load_dotenv
 import google.auth
@@ -20,11 +30,66 @@ logging.getLogger("google_adk").setLevel(logging.DEBUG)
 logging.getLogger("httpx").setLevel(logging.WARNING)
 
 # --- CONFIGURATION ---
-MAX_STEPS = 30  # Safety Brake: Stop after 15 iterations no matter what.
+MAX_STEPS = 60  # Safety Brake: Stop after 15 iterations no matter what.
 
 
 load_dotenv()
 
+
+async def _merge_agent_run_patched(
+    agent_runs: list[AsyncGenerator[Event, None]],
+) -> AsyncGenerator[Event, None]:
+    """Merges the agent run event generator.
+
+    This implementation guarantees for each agent, it won't move on until the
+    generated event is processed by upstream runner.
+
+    Args:
+        agent_runs: A list of async generators that yield events from each agent.
+
+    Yields:
+        Event: The next event from the merged generator.
+    """
+    sentinel = object()
+    queue = asyncio.Queue()
+
+    # Agents are processed in parallel.
+    # Events for each agent are put on queue sequentially.
+    async def process_an_agent(events_for_one_agent):
+        try:
+            async for event in events_for_one_agent:
+                resume_signal = asyncio.Event()
+                await queue.put((event, resume_signal))
+                # Wait for upstream to consume event before generating new events.
+                await resume_signal.wait()
+        finally:
+            # Mark agent as finished.
+            await queue.put((sentinel, None))
+
+    async with asyncio.TaskGroup() as tg:
+        for events_for_one_agent in agent_runs:
+            tg.create_task(process_an_agent(events_for_one_agent))
+
+        sentinel_count = 0
+        # Run until all agents finished processing.
+        try:
+            while sentinel_count < len(agent_runs):
+                event, resume_signal = await queue.get()
+                # Agent finished processing.
+                if event is sentinel:
+                    sentinel_count += 1
+                else:
+                    yield event
+                    # Signal to agent that it should generate next event.
+                    resume_signal.set()
+        except GeneratorExit as e:
+            traceback.print_exc()
+            print(f"❌ Received ERROR: {e}")
+            pass # Gracefully exit when the generator is closed.
+
+
+parallel_agent._merge_agent_run = _merge_agent_run_patched
+# --- END MONKEY PATCH ---
 
 PROJECT_ID = os.getenv("PROJECT_ID", "unset")
 LOCATION = os.getenv("LOCATION", "us-central1")

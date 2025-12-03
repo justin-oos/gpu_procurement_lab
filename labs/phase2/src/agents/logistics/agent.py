@@ -28,6 +28,9 @@ logistics_agent = Agent(
     name="logistics_agent",
     model=config.MODEL_NAME,
     instruction=LOGISTICS_SYSTEM_PROMPT,
+    description=(
+        "An agent checks logistics information."
+    ),
     tools=[api_tools.fetch_spot_prices, api_tools.estimate_shipping],
     output_key="logistics_agent_result",
 )

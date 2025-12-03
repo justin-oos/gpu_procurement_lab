@@ -1,5 +1,9 @@
 from google.adk import Agent
 from google.adk.tools import AgentTool
+import os
+import vertexai
+from google import genai
+from dotenv import load_dotenv
 
 # Import the sub-agents
 from agents.source_gpus.agent import source_gpus_agent
@@ -8,6 +12,30 @@ from agents.source_gpus.agent import source_gpus_agent
 from tools.file_system import FileSystemTools
 from utils.gdrive_integration import ReportGenerator
 from utils.config import config
+
+
+load_dotenv()
+
+
+PROJECT_ID = os.getenv("PROJECT_ID", "unset")
+LOCATION = os.getenv("LOCATION", "us-central1")
+
+
+vertexai.init(
+    project=PROJECT_ID,
+    location=LOCATION,
+)
+
+os.environ["GOOGLE_GENAI_USE_VERTEXAI"] = "1"
+os.environ["GOOGLE_CLOUD_PROJECT"] = PROJECT_ID
+os.environ["GOOGLE_CLOUD_LOCATION"] = LOCATION
+
+genai_client = genai.Client(
+    vertexai=True,
+    project=PROJECT_ID,
+    location=LOCATION,
+)
+
 
 # Initialize tools
 fs_tools = FileSystemTools(root_dir="./workspace")

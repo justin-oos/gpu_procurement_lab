@@ -51,6 +51,9 @@ inventory_agent = Agent(
    name="inventory_agent",
    model=config.MODEL_NAME,
    instruction=INVENTORY_SYSTEM_PROMPT,
+   description=(
+      "An agent checks inventory information."
+   ),
    tools=[db_tools.explore_schema, db_tools.run_query],
    output_key="inventory_agent_result",
 )

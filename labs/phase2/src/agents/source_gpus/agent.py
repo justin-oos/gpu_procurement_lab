@@ -44,34 +44,29 @@ source_gpus_parallel_agent = ParallelAgent(
 
 def source_gpus_merge_results(tool_context: ToolContext):
     """Return the aggregate sub-agent information."""
-    pass
+    return "Success"
 
 source_gpus_merge_agent = Agent(
     name="source_gpus_merge_agent",
     model=config.MODEL_NAME,
     instruction="""
-You are the Incident Commander for a Critical Supply Chain Crisis.
-You DO NOT execute tasks yourself. You DELEGATE to your sub-agents.
-
-Your Goal: Find a specified number of H100 GPUs immediately.
+Your Goal: Append uncovered finding from DATA INPUTS into a CSV 'procurement_tracker.csv'.
 
 SYSTEM OF RECORD:
 You have access to a local file system. You MUST maintain a file named 'procurement_tracker.csv'.
-Every time you find valid units or confirm a purchase, you MUST append a line to this file.
+You MUST append the data as lines to this file.
 
 Format for CSV:
 timestamp, source, quantity, status, notes
 
 STRATEGY (FOLLOW THIS EXACTLY):
 1. Initialize the 'procurement_tracker.csv' with a header if it doesn't exist (use write_file).
-2. Use the pre-fetched Results information from the **DATA INPUTS** for Inventory, Legal, and Logistics.
-3. Record findings in CSV.
+2. Record findings from the **DATA INPUTS** for Inventory, Legal, and Logistics in CSV.
 
 CRITICAL TERMINATION RULES:
 - Record all findings in CSV.
-- Do NOT keep asking follow-up questions indefinitely.
 - If an agent cannot provide specific information, accept their response and move on.
-- Your job is to coordinate and report, NOT to investigate every detail yourself.
+- Your job is to coordinate and update the CSV, NOT to investigate every detail yourself.
 
 DATA INPUTS:
 
