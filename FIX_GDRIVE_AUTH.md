@@ -18,7 +18,7 @@ You have **two options** to fix this:
 Run this command to re-authenticate with the correct scopes:
 
 ```bash
-gcloud auth application-default login --scopes=https://www.googleapis.com/auth/drive.file,https://www.googleapis.com/auth/cloud-platform
+gcloud auth application-default login --scopes=https://www.googleapis.com/auth/drive.file,https://www.googleapis.com/auth/userinfo.email,https://www.googleapis.com/auth/cloud-platform
 ```
 
 This will:
