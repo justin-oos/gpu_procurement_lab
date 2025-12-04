@@ -84,13 +84,11 @@ async def call_agent_async():
     ):
         step_count += 1
         
-        # --- 1. THE SAFETY BRAKE ---
         if step_count > MAX_STEPS:
             print(f"\n❌ [System] TERMINATING: Hit max step limit ({MAX_STEPS}).")
             print("   Likely cause: Infinite loop due to recurring tool errors (404/Connection Refused).")
             break  # Force exit
 
-        # --- 2. SUCCESS CONDITION ---
         if event.is_final_response():
             # Check if there is actual text content
             if event.content and event.content.parts:
@@ -99,7 +97,6 @@ async def call_agent_async():
                 print("\n🤖 [Commander]: (Returned final response with no text)")
             break 
             
-        # --- 3. PROGRESS INDICATOR ---
         # If it's not final, the agent is thinking/calling tools
         print(f"   ⚙️ [System] Step {step_count}: Processing...")
 

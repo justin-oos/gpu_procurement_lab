@@ -12,15 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
-import sys
-import logging
 from dotenv import load_dotenv
-import google.auth.transport.requests
-import google.oauth2.id_token
 from google.adk.agents import Agent, SequentialAgent, ParallelAgent
 from google.adk.tools.tool_context import ToolContext
-
 from tools.file_system import FileSystemTools
 from utils.gdrive_integration import ReportGenerator
 from utils.config import config
@@ -30,19 +24,16 @@ from agents.logistics.agent import logistics_agent
 
 
 load_dotenv()
-
-
 fs_tools = FileSystemTools(root_dir="./workspace")
 reporter = ReportGenerator()
 
-
 source_gpus_parallel_agent = ParallelAgent(
-        name="source_gpus_parallel_agent",
-        description=(
-            "Runs multiple source GPU sub-agents in parallel."
-        ),
-        sub_agents=[inventory_agent, legal_agent, logistics_agent],
-    )
+    name="source_gpus_parallel_agent",
+    description=(
+        "Runs multiple source GPU sub-agents in parallel."
+    ),
+    sub_agents=[inventory_agent, legal_agent, logistics_agent],
+)
 
 def source_gpus_merge_results(tool_context: ToolContext):
     """Return the aggregate sub-agent information."""
@@ -86,12 +77,10 @@ DATA INPUTS:
         {logistics_agent_result}
 """,
     tools=[
-        # File System Capabilities (The "Pivot")
         fs_tools.read_file,
         fs_tools.write_file,
         fs_tools.append_to_log,
         fs_tools.list_files,
-        # Reporting
         reporter.upload_report,
     ]
 )

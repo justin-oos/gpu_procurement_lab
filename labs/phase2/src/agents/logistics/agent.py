@@ -16,8 +16,7 @@ from google.adk import Agent
 from tools.api import LogisticsTools
 from utils.config import config
 
-# Initialize tools
-api_tools = LogisticsTools()
+tools = LogisticsTools()
 
 LOGISTICS_SYSTEM_PROMPT = """
 You are the Logistics Manager.
@@ -28,9 +27,7 @@ logistics_agent = Agent(
     name="logistics_agent",
     model=config.MODEL_NAME,
     instruction=LOGISTICS_SYSTEM_PROMPT,
-    description=(
-        "An agent checks logistics information."
-    ),
-    tools=[api_tools.fetch_spot_prices, api_tools.estimate_shipping],
+    description="Agent for fetching price quotes from the API.",
+    tools=[tools.fetch_spot_prices, tools.estimate_shipping],
     output_key="logistics_agent_result",
 )

@@ -13,11 +13,11 @@
 # limitations under the License.
 
 from google.adk import Agent
-from tools.rag import LegalTools
+from tools.contract_analyzer import ContractAnalyzer
 from utils.config import config
 
 # Initialize tools
-rag_tools = LegalTools()
+rag_tools = ContractAnalyzer()
 
 LEGAL_SYSTEM_PROMPT = """
 You are the Legal Analyst Agent.

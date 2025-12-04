@@ -17,9 +17,8 @@ from tools.file_system import FileSystemTools
 from utils.gdrive_integration import ReportGenerator
 from utils.config import config
 
-# Initialize tools
 fs_tools = FileSystemTools(root_dir="./workspace")
-reporter = ReportGenerator()
+uploader = ReportGenerator()
 
 PURCHASE_ORDER_SYSTEM_PROMPT = """
 You are the Purchase Order Agent.
@@ -68,6 +67,6 @@ purchase_order_agent = Agent(
     tools=[
         fs_tools.read_file,
         fs_tools.write_file,
-        reporter.upload_report,
+        uploader.upload_report,
     ],
 )

@@ -16,9 +16,6 @@ from google.adk import Agent
 from tools.rag import LegalTools
 from utils.config import config
 
-# Initialize tools
-rag_tools = LegalTools()
-
 LEGAL_SYSTEM_PROMPT = """
 You are the Legal Analyst Agent.
 Your goal is to interpret vendor contracts to find allowable exceptions for procurement.
@@ -36,9 +33,7 @@ legal_agent = Agent(
     name="legal_agent",
     model=config.MODEL_NAME,
     instruction=LEGAL_SYSTEM_PROMPT,
-    description=(
-        "An agent checks legal information."
-    ),
-    tools=[rag_tools.analyze_contract_clause],
+    description="Agent for extracting clauses from legal contracts",
+    tools=[LegalTools().analyze_contract_clause],
     output_key="legal_agent_result",
 )

@@ -36,7 +36,7 @@ def create_contract_pdf(filename: str):
     c.drawString(50, height - 85, "DATE: 2024-01-01")
 
     # Clause 4: The Restriction (Exclusivity)
-    # This is what stops the Naive Agent.
+    # The Naive Agent is expected to struggle with this
     c.setFont("Helvetica-Bold", 12)
     c.drawString(50, height - 150, "4. EXCLUSIVITY AND SOURCING")
     c.setFont("Helvetica", 11)
@@ -51,8 +51,7 @@ def create_contract_pdf(filename: str):
         c.drawString(50, y, line)
         y -= 15
 
-    # Clause 7: The Loophole (Force Majeure)
-    # This is what the Legal Agent must find.
+    # Clause 7: The Loophole (Force Majeure) - his is what the Legal Agent must find.
     c.setFont("Helvetica-Bold", 12)
     c.drawString(50, y - 30, "7. NON-PERFORMANCE AND EXCEPTIONS")
     y -= 50

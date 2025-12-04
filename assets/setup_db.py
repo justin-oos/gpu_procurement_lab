@@ -13,7 +13,6 @@
 # limitations under the License.
 
 from google.cloud import bigquery
-from google.cloud.exceptions import NotFound
 from utils.config import config
 import os
 

@@ -14,12 +14,10 @@
 
 from google.adk import Agent
 from tools.database import DatabaseTools
-from utils.config import config  # <--- Ensure config is imported
+from utils.config import config
 
-# Initialize tools instance
 db_tools = DatabaseTools()
 
-# --- THE FIX: Inject specific ID strings into the prompt ---
 INVENTORY_SYSTEM_PROMPT = f"""
 You are the Inventory Investigator Agent.
 Your goal is to find hidden stock in the '{config.TABLE_INVENTORY}' database.
@@ -30,8 +28,8 @@ ENVIRONMENT CONTEXT:
 - Table Name: {config.TABLE_INVENTORY}
 
 CRITICAL RULES:
-1. You are dealing with a legacy system with CRYPTIC column names.
-2. You MUST use the 'explore_schema' tool first to understand the columns.
+1. You are dealing with a legacy database table with CRYPTIC column names.
+2. You MUST use the 'explore_schema' tool first to understand the table schema.
 3. ALWAYS use Fully Qualified Table Names in your SQL.
    Format: `{config.PROJECT_ID}.{config.DATASET_ID}.{config.TABLE_INVENTORY}`
 
@@ -39,12 +37,12 @@ CRITICAL RULES:
    The 'ITEM_REF_ID' in the inventory table is the INTERNAL CODE (e.g., 'REF_...').
    It is NOT the Vendor SKU (e.g., 'NV-...').
    
-   PROCEDURE:
+   MANDATORY PROCESS:
    a. First, query `{config.PROJECT_ID}.{config.DATASET_ID}.{config.TABLE_CATALOG}` to find the internal 'ITEM_REF_ID' for the product.
    b. Then, use that 'ITEM_REF_ID' to query the Inventory table.
    c. NEVER filter the Inventory table using 'NV-...' Vendor SKUs.
 
-5. Look specifically for 'Quarantine' or 'Hold' bins if standard stock is 0.
+5. If the standard stock is 0, look for 'Quarantine' or 'Hold' bins.
 """
 
 inventory_agent = Agent(

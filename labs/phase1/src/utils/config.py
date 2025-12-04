@@ -21,7 +21,6 @@ from dotenv import load_dotenv
 # Load .env file if present
 load_dotenv()
 
-# Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 

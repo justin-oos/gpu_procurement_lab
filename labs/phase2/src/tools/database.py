@@ -17,7 +17,6 @@ from typing import List, Dict, Any, Optional
 from utils.config import config
 import logging
 
-# Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -29,39 +28,29 @@ class DatabaseTools:
     def run_query(self, sql_query: str) -> List[Dict[str, Any]]:
         """Executes a standard SQL query."""
 
-        # --- ADDED VISIBILITY ---
         print(f"\n[🛠️ DB TOOL] Executing SQL:\n    {sql_query}")
-        # ------------------------
-
         try:
             query_job = self.client.query(sql_query)
             results = [dict(row) for row in query_job.result()]
-
-            # --- ADDED VISIBILITY ---
             print(f"[✅ DB TOOL] Success. Rows returned: {len(results)}")
-            # ------------------------
 
             return results
         except Exception as e:
-            # --- ADDED VISIBILITY ---
             print(f"[❌ DB TOOL] Error: {str(e)}")
-            # ------------------------
             logger.error(f"Query failed: {e}")
             return [{"error": str(e)}]
 
     def explore_schema(self, table_name: str) -> Dict[str, Any]:
         """Returns the schema and a sample of 5 rows."""
 
-        # --- ADDED VISIBILITY ---
-        print(f"\n[🛠️ DB TOOL] Exploring Schema for: {table_name}")
-        # ------------------------
+        print(f"\n[DB TOOL] Exploring Schema for: {table_name}")
 
-        clean_table = table_name.replace(";", "").replace("--", "")
-        # Handle cases where LLM might pass the full ID or just the name
-        if "." in clean_table:
-            full_table_id = clean_table
+        table_name = table_name.replace(";", "").replace("--", "")
+        # Handle cases where LLM passes the full ID vs just the name
+        if "." in table_name:
+            full_table_id = table_name
         else:
-            full_table_id = f"{config.PROJECT_ID}.{config.DATASET_ID}.{clean_table}"
+            full_table_id = f"{config.PROJECT_ID}.{config.DATASET_ID}.{table_name}"
 
         try:
             table = self.client.get_table(full_table_id)
@@ -73,12 +62,12 @@ class DatabaseTools:
             sample_rows = self.run_query(sample_query)
 
             return {
-                "table_name": clean_table,
-                "fully_qualified_id": full_table_id,  # Helping the agent learn the right name
+                "table_name": table_name,
+                "fully_qualified_id": full_table_id,  # Help the agent learn the full table name
                 "schema_fields": schema_info,
                 "sample_rows": sample_rows,
                 "note": f"IMPORTANT: When writing SQL, use this table name: `{full_table_id}`",
             }
         except Exception as e:
             print(f"[❌ DB TOOL] Schema Error: {str(e)}")
-            return {"error": f"Could not explore schema: {str(e)}"}
+            return {"error": f"Exception while loading schema: {str(e)}"}

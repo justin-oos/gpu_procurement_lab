@@ -9,7 +9,6 @@
    terraform apply -var="project_id=YOUR_PROJECT_ID"
    ```
 
-
 ### Step 2: Permit Vertex AI Service Account to Access your GCS Bucket
 
 TODO: Automate this step:

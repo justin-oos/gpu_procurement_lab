@@ -12,14 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import Dict
 from google.cloud import storage
 import vertexai
 from vertexai.generative_models import GenerativeModel, Part
 from utils.config import config
 
 
-class LegalTools:
+class ContractAnalyzer:
     def __init__(self):
         vertexai.init(project=config.PROJECT_ID, location=config.REGION)
         self.model = GenerativeModel("gemini-3-pro-preview")
@@ -27,7 +26,7 @@ class LegalTools:
 
     def analyze_contract_clause(self, doc_name: str, clause_type: str) -> str:
         """
-        Analyzes a specific legal document for a specific type of clause.
+        Analyzes the given legal document and extracts the specified clause.
 
         Args:
             doc_name (str): The filename in GCS (e.g., 'Master_Supply_Agreement.pdf').
@@ -36,7 +35,6 @@ class LegalTools:
         Returns:
             str: The extraction and interpretation of the clause.
         """
-        #  A specialized RAG tool that only extracts specific legal sections
 
         gcs_uri = f"gs://{config.BUCKET_NAME}/{doc_name}"
 
@@ -54,7 +52,6 @@ class LegalTools:
         try:
             # Loading the file as a Part for multimodal processing
             document = Part.from_uri(uri=gcs_uri, mime_type="application/pdf")
-
             response = self.model.generate_content([document, prompt])
             return response.text
         except Exception as e:

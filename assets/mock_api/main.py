@@ -12,16 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from fastapi import FastAPI, HTTPException
-from typing import Optional
+from fastapi import FastAPI
 
 app = FastAPI(title="Global GPU Spot Market API", version="1.0.0")
-
 
 @app.get("/")
 def health_check():
     return {"status": "online", "service": "Mock Vendor API"}
-
 
 @app.get("/v1/market/spot")
 def get_spot_price(chip: str):
@@ -55,13 +52,12 @@ def get_spot_price(chip: str):
             "note": "No stock found in global spot market.",
         }
 
-
 @app.get("/v1/shipping/estimate")
 def get_shipping_estimate(origin: str, dest: str):
     """
     Returns shipping timeframes.
     """
-    # Logic to simulate different shipping routes
+    # Simulate different shipping routes
     if origin.upper() == "TW" and dest.upper() == "US":
         return {
             "route": "TW-US",

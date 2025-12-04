@@ -14,12 +14,10 @@
 
 from google.adk import Agent
 from tools.database import DatabaseTools
-from utils.config import config  # <--- Ensure config is imported
+from utils.config import config
 
-# Initialize tools instance
 db_tools = DatabaseTools()
 
-# --- THE FIX: Inject specific ID strings into the prompt ---
 INVENTORY_SYSTEM_PROMPT = f"""
 You are the Inventory Investigator Agent.
 Your goal is to find hidden stock in the '{config.TABLE_INVENTORY}' database.
@@ -51,9 +49,7 @@ inventory_agent = Agent(
    name="inventory_agent",
    model=config.MODEL_NAME,
    instruction=INVENTORY_SYSTEM_PROMPT,
-   description=(
-      "An agent checks inventory information."
-   ),
+   description="Agent for finding inventory information in the legacy database.",
    tools=[db_tools.explore_schema, db_tools.run_query],
    output_key="inventory_agent_result",
 )
