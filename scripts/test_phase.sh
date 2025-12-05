@@ -69,6 +69,7 @@ python $PHASE_DIR/main.py
 
 # --- Cleanup ---
 echo -e "\n${BLUE}🧹 Cleaning up...${NC}"
-kill $API_PID
+#kill $API_PID
+fuser -k $API_PORT/tcp > /dev/null 2>&1
 echo "✅ Mock API stopped."
 echo -e "${GREEN}🏁 Demo Complete.${NC}"
