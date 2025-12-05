@@ -116,6 +116,17 @@ endif
 deploy: $(DEPLOY_TIMESTAMP)
 
 
+# Describe Terraform Resources
+.PHONY: graph
+graph: 
+ifndef project
+	$(error project is not set!)
+else
+	terraform -chdir=infra plan -out .terraform.plan -var="project_id=$(project)"
+	terraform -chdir=infra graph -plan=.terraform.plan | dot -Tpng > ./docs/terraform-graph.png
+	terraform -chdir=infra graph -plan=.terraform.plan | dot -Tsvg > ./docs/terraform-graph.svg
+endif
+	
 # Destroy Terraform infra
 .PHONY: destroy
 destroy: $(INIT_TIMESTAMP)
