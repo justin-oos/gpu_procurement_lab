@@ -107,6 +107,7 @@ $(DEPLOY_TIMESTAMP): $(INIT_TIMESTAMP) $(INFRA_FILES)
 ifndef project
 	$(error project is not set!)
 else
+	echo -e "${BLUE}🚀 Deploying Vertex AI L400 Lab 2 Demo Cloud resources...${NC}"
 	terraform -chdir=infra apply -var="project_id=$(project)"
 	touch $(DEPLOY_TIMESTAMP)
 endif

@@ -38,7 +38,7 @@ NC='\033[0m' # No Color
 
 source $VENV_DIR/bin/activate
 
-echo -e "${BLUE}🚀 Starting Vertex AI L400 Lab 2 Demo Initialization for Phase 1...${NC}"
+echo -e "${BLUE}🚀 Running Vertex AI L400 Lab 2 Test for Phase $PHASE_NUM...${NC}"
 
 # --- Step 1: The External World (Mock API) ---
 echo -e "\n${BLUE}[1/2] Launching Mock Spot Market API...${NC}"

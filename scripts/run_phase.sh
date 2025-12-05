@@ -38,7 +38,7 @@ NC='\033[0m' # No Color
 
 source $VENV_DIR/bin/activate
 
-echo -e "${BLUE}🚀 Starting Vertex AI L400 Lab 2 Demo Initialization for Phase 1...${NC}"
+echo -e "${BLUE}🚀 Running Vertex AI L400 Lab 2 Demo for Phase $PHASE_NUM...${NC}"
 
 # --- Step 1: The External World (Mock API) ---
 echo -e "\n${BLUE}[1/2] Launching Mock Spot Market API...${NC}"
@@ -57,7 +57,7 @@ echo "   Waiting 5 seconds for API to warm up..."
 sleep 5
 
 # --- Step 2: The War Room (Agents) ---
-echo -e "\n${BLUE}[2/2] 🛡️ INITIALIZING INCIDENT COMMAND WAR ROOM...${NC}"
+echo -e "\n${BLUE}[2/2] 🛡️ Launching ADK Web UI...${NC}"
 echo "---------------------------------------------------------------"
 
 
