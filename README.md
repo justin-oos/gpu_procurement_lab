@@ -1,13 +1,19 @@
 # 🛠️ Environment Setup
 
-## Step 1: Deploy Cloud Resources
+## Step 1: Login to Google Cloud with Adequate Scopes
+
+```bash
+gcloud auth application-default login --scopes=https://www.googleapis.com/auth/drive.file,https://www.googleapis.com/auth/userinfo.email,https://www.googleapis.com/auth/cloud-platform
+```
+
+## Step 2: Deploy Cloud Resources
 
 Deploy Resources via Makefile:
 ```bash
 make deploy project=YOUR_PROJECT_ID
 ```
 
-## Step 2a: Run a Live Demo for a given Phase
+## Step 3a: Run a Live Demo for a given Phase
 
 To run a specific demo phase, use the **make run** target with the phase number input.
 
@@ -21,7 +27,7 @@ For example
 make run phase=1
 ```
 
-## Step 2b: Run a Headless Test for a given Phase
+## Step 3b: Run a Headless Test for a given Phase
 
 To run a headless test for a specific demo phase, use the **make test** target with the phase number input.
 
@@ -35,7 +41,7 @@ For example
 make test phase=1
 ```
 
-## Step 3: Destroy Cloud Resources
+## Step 4: Destroy Cloud Resources
 
 Destroy Resources via Makefile:
 ```bash
@@ -44,7 +50,7 @@ make destroy
 
 # 🛠️ Environment Phase Overview
 
-## Phase 1
+## Phase 1 Agents and Tools
 
 ```mermaid
 graph TD
@@ -79,7 +85,7 @@ graph TD
     end
 ```
 
-## Phase 2
+## Phase 2 Agents and Tools
 
 ```mermaid
 graph TD
