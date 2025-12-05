@@ -47,4 +47,3 @@ resource "google_project_service" "serviceusage_api" {
   service            = "serviceusage.googleapis.com"
   disable_on_destroy = false
 }
-

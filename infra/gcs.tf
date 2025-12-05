@@ -39,7 +39,7 @@ resource "google_storage_bucket_iam_member" "vertex_legal_bucket_viewer" {
     google_project_service.aiplatform_api,
     google_storage_bucket.gcs_bucket,
   ]
-  
+
   bucket = local.final_gcs_bucket_name
   role   = "roles/storage.objectViewer"
   member = "serviceAccount:service-${data.google_project.main_project.number}@gcp-sa-aiplatform.iam.gserviceaccount.com"

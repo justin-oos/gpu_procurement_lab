@@ -14,17 +14,17 @@
 
 # 1. The Dataset
 resource "google_bigquery_dataset" "dataset" {
-  dataset_id                  = var.dataset_id
-  friendly_name               = "GPU Procurement Legacy DB"
-  description                 = "The opaque legacy database for the L400 Lab"
-  location                    = "US"
-  delete_contents_on_destroy  = true
+  dataset_id                 = var.dataset_id
+  friendly_name              = "GPU Procurement Legacy DB"
+  description                = "The opaque legacy database for the L400 Lab"
+  location                   = "US"
+  delete_contents_on_destroy = true
 }
 
 # 2. Table 1: The Messy Inventory (Schema from Phase 1 Design)
 resource "google_bigquery_table" "inventory" {
-  dataset_id = google_bigquery_dataset.dataset.dataset_id
-  table_id   = "LEGACY_INV_MAIN_V2"
+  dataset_id          = google_bigquery_dataset.dataset.dataset_id
+  table_id            = "LEGACY_INV_MAIN_V2"
   deletion_protection = false
 
   schema = <<EOF
@@ -65,8 +65,8 @@ EOF
 
 # 3. Table 2: The Rosetta Stone Catalog
 resource "google_bigquery_table" "catalog" {
-  dataset_id = google_bigquery_dataset.dataset.dataset_id
-  table_id   = "REF_CATALOG_DUMP"
+  dataset_id          = google_bigquery_dataset.dataset.dataset_id
+  table_id            = "REF_CATALOG_DUMP"
   deletion_protection = false
 
   schema = <<EOF
@@ -113,9 +113,9 @@ resource "google_bigquery_job" "seed_inventory" {
       ('REF_9982_X', 'A1', 0, 1715620000, '0'),
       ('REF_1002_A', 'B2', 5000, 1715500000, '0')
     EOT
-    
+
     create_disposition = ""
-    write_disposition = ""
+    write_disposition  = ""
   }
 
   depends_on = [google_bigquery_table.inventory]
@@ -132,7 +132,7 @@ resource "google_bigquery_job" "seed_catalog" {
   }
 
   query {
-    query = <<EOT
+    query              = <<EOT
       INSERT INTO `${var.project_id}.${var.dataset_id}.${google_bigquery_table.catalog.table_id}` 
       (REF_ID, HUMAN_READABLE_NAME, MANUFACTURER)
       VALUES
@@ -140,7 +140,7 @@ resource "google_bigquery_job" "seed_catalog" {
       ('REF_1002_A', 'Standard Power Cable', 'Generic')
     EOT
     create_disposition = ""
-    write_disposition = ""
+    write_disposition  = ""
   }
 
   depends_on = [google_bigquery_table.catalog]

@@ -15,16 +15,16 @@
 # Define locals
 locals {
   scripts_dir = "${path.root}/../scripts/"
-  
+
   file_templates = {
     "base_env.sh" = {
-      template        = templatefile("${path.module}/base_env_tpl.sh", {
+      template = templatefile("${path.module}/base_env_tpl.sh", {
         project_id      = var.project_id,
         location        = var.region,
         gcs_bucket_name = local.final_gcs_bucket_name,
       })
       output_file_path = "${local.scripts_dir}/base_env.sh"
-      permissions     = "0755"
+      permissions      = "0755"
     }
   }
 }
@@ -41,7 +41,7 @@ resource "local_file" "templated_files" {
   for_each = local.file_templates
 
   content         = each.value.template
-  filename        = "${each.value.output_file_path}"
+  filename        = each.value.output_file_path
   file_permission = each.value.permissions
 
   depends_on = [
