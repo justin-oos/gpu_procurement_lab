@@ -41,3 +41,10 @@ resource "google_project_service" "storage_api" {
   service            = "storage.googleapis.com"
   disable_on_destroy = false
 }
+
+# Enable the Service Usage API
+resource "google_project_service" "serviceusage_api" {
+  service            = "serviceusage.googleapis.com"
+  disable_on_destroy = false
+}
+

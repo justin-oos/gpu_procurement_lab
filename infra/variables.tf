@@ -28,3 +28,13 @@ variable "dataset_id" {
   type        = string
   default     = "gpu_procurement_db"
 }
+
+variable "gcs_bucket_name" {
+  description = "GCS Bucket Name"
+  type        = string
+  default     = "unset"
+}
+
+locals {
+  final_gcs_bucket_name = var.gcs_bucket_name != "unset" ? var.gcs_bucket_name : "${var.project_id}-gpu-procurement-docs"
+}

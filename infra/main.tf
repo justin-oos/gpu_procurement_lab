@@ -96,6 +96,12 @@ resource "google_bigquery_job" "seed_inventory" {
   job_id   = "seed_inventory_${formatdate("YYYYMMDDhhmmss", timestamp())}"
   location = "US"
 
+  lifecycle {
+    ignore_changes = [
+      job_id,
+    ]
+  }
+
   query {
     query = <<EOT
       INSERT INTO `${var.project_id}.${var.dataset_id}.${google_bigquery_table.inventory.table_id}` 
@@ -118,6 +124,12 @@ resource "google_bigquery_job" "seed_inventory" {
 resource "google_bigquery_job" "seed_catalog" {
   job_id   = "seed_catalog_${formatdate("YYYYMMDDhhmmss", timestamp())}"
   location = "US"
+
+  lifecycle {
+    ignore_changes = [
+      job_id,
+    ]
+  }
 
   query {
     query = <<EOT
