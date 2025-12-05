@@ -21,22 +21,17 @@ CREATE OR REPLACE TABLE `gpu_procurement_db.LEGACY_INV_MAIN_V2`
     STATUS_FLAG_9 INT64 OPTIONS(description="Inventory Status: 0=OK, 1=Reserved, 9=Legal Hold")
 );
 
--- SEED DATA
+-- SEED DATA TODO: remove GPU type from ID values (H100, A100, RTX4090) - the model might cheat
 
 -- 1. The "Decoy" H100 records (Standard Shipping Bin A1)
--- Shows 0 stock to fool the naive agent.
-INSERT INTO `gpu_procurement_db.LEGACY_INV_MAIN_V2`
-VALUES ('REF_H100_XIE', 'A1', 0, 1700000000, 0);
+-- Shows 0 stock in attempt to confuse the agent.
+INSERT INTO `gpu_procurement_db.LEGACY_INV_MAIN_V2` VALUES ('REF_H100_XIE', 'A1', 0, 1700000000, 0);
 
 -- 2. The "Golden" Record (The Hidden Stock)
 -- 300 units in Bin 55 (Quarantine) with Status 9 (Legal Hold).
--- This is what the Inventory Agent must find.
-INSERT INTO `gpu_procurement_db.LEGACY_INV_MAIN_V2`
-VALUES ('REF_H100_XIE', '55', 300, 1710000000, 9);
+-- The Inventory Agent must find this record in order to solve the task.
+INSERT INTO `gpu_procurement_db.LEGACY_INV_MAIN_V2` VALUES ('REF_H100_XIE', '55', 300, 1710000000, 9);
 
--- 3. Noise Data (Other products to make the DB look real)
-INSERT INTO `gpu_procurement_db.LEGACY_INV_MAIN_V2`
-VALUES ('REF_A100_NV', 'A1', 50, 1705000000, 0);
-
-INSERT INTO `gpu_procurement_db.LEGACY_INV_MAIN_V2`
-VALUES ('REF_RTX4090', 'B2', 1200, 1706000000, 0);
+-- 3. Distractors: additional products to make the DB look more realistic.
+INSERT INTO `gpu_procurement_db.LEGACY_INV_MAIN_V2` VALUES ('REF_A100_NV', 'A1', 50, 1705000000, 0);
+INSERT INTO `gpu_procurement_db.LEGACY_INV_MAIN_V2` VALUES ('REF_RTX4090', 'B2', 1200, 1706000000, 0);

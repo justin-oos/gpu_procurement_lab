@@ -19,12 +19,7 @@ CREATE OR REPLACE TABLE `gpu_procurement_db.REF_CATALOG_DUMP`
     VENDOR_SKU STRING
 );
 
--- SEED DATA
-INSERT INTO `gpu_procurement_db.REF_CATALOG_DUMP`
-VALUES ('REF_H100_XIE', 'H100 Tensor Core GPU', 'NV-H100-80GB');
-
-INSERT INTO `gpu_procurement_db.REF_CATALOG_DUMP`
-VALUES ('REF_A100_NV', 'A100 Tensor Core GPU', 'NV-A100-40GB');
-
-INSERT INTO `gpu_procurement_db.REF_CATALOG_DUMP`
-VALUES ('REF_RTX4090', 'GeForce RTX 4090', 'NV-RTX-4090');
+-- SEED DATA TODO: remove GPU type from ID values (H100, A100, RTX4090) - the model might cheat
+INSERT INTO `gpu_procurement_db.REF_CATALOG_DUMP` VALUES ('REF_H100_XIE', 'H100 Tensor Core GPU', 'NV-H100-80GB');
+INSERT INTO `gpu_procurement_db.REF_CATALOG_DUMP` VALUES ('REF_A100_NV', 'A100 Tensor Core GPU', 'NV-A100-40GB');
+INSERT INTO `gpu_procurement_db.REF_CATALOG_DUMP` VALUES ('REF_RTX4090', 'GeForce RTX 4090', 'NV-RTX-4090');
