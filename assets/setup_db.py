@@ -56,21 +56,17 @@ def setup_database():
         with open(file_path, "r") as f:
             sql = f.read()
 
-            # Split by semicolon to handle multiple statements
-            statements = sql.split(";")
+            # remove comments from the sql
+            sql = "".join(line for line in sql.splitlines() if not line.strip().startswith("--"))
+            
+            # Dynamic injection of dataset ID
+            sql = sql.replace("gpu_procurement_db", config.DATASET_ID)
 
-            for stmt in statements:
-                if stmt.strip():
-                    try:
-                        # Dynamic injection of dataset ID
-                        clean_stmt = stmt.replace(
-                            "gpu_procurement_db", config.DATASET_ID
-                        )
-
-                        query_job = client.query(clean_stmt)
-                        query_job.result()  # Wait for completion
-                    except Exception as e:
-                        print(f"❌ Error running statement in {filename}: {e}")
+            try:
+                query_job = client.query(sql)
+                query_job.result()  # Wait for completion
+            except Exception as e:
+                print(f"❌ Error running statement in {filename}: {e}")
 
         print(f"✅ {filename} deployed successfully.")
 
