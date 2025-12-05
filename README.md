@@ -2,6 +2,8 @@
 
 ## Step 1: Login to Google Cloud with Adequate Scopes
 
+See [FIX_GDRIVE_AUTH.md](/FIX_GDRIVE_AUTH.md) for justification around scopes.
+
 ```bash
 gcloud auth application-default login --scopes=https://www.googleapis.com/auth/drive.file,https://www.googleapis.com/auth/userinfo.email,https://www.googleapis.com/auth/cloud-platform
 ```
