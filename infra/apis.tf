@@ -12,6 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Enable the BigQuery API
+resource "google_project_service" "bigquery_api" {
+  service            = "bigquery.googleapis.com"
+  disable_on_destroy = false
+}
+
 # Enable the Vertex AI Platform API
 resource "google_project_service" "aiplatform_api" {
   service            = "aiplatform.googleapis.com"
@@ -21,5 +27,17 @@ resource "google_project_service" "aiplatform_api" {
 # Enable the Google Drive API
 resource "google_project_service" "drive_api" {
   service            = "drive.googleapis.com"
+  disable_on_destroy = false
+}
+
+# Enable the Identity and Access Management API
+resource "google_project_service" "iam_manager_api" {
+  service            = "iam.googleapis.com"
+  disable_on_destroy = false
+}
+
+# Enable the Storage API
+resource "google_project_service" "storage_api" {
+  service            = "storage.googleapis.com"
   disable_on_destroy = false
 }
