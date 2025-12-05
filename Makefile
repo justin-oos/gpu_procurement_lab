@@ -33,9 +33,12 @@ PIP = $(VENV)/bin/pip
 # Define Timestamped Files
 VENV_TIMESTAMP = ${BUILD}/.make.venv.done
 INSTALL_TIMESTAMP = ${BUILD}/.make.install.done
+HYDRATE_TIMESTAMP = ${BUILD}/.make.hydrate.done
 
 
 TERRAFORM_FILES := $(wildcard infra/*.tf)
+INFRA_DIRS := $(shell find infra -type d)
+INFRA_FILES := $(foreach dir,$(INFRA_DIRS),$(wildcard $(dir)/*.tf) $(wildcard $(dir)/*.sh))
 INIT_TIMESTAMP := infra/.terraform.initialized
 DEPLOY_TIMESTAMP := infra/.terraform.deployed
 
@@ -100,7 +103,7 @@ init: $(INIT_TIMESTAMP)
 
 
 # Deploy Terraform infra
-$(DEPLOY_TIMESTAMP): $(INIT_TIMESTAMP) infra/*.tf
+$(DEPLOY_TIMESTAMP): $(INIT_TIMESTAMP) $(INFRA_FILES)
 ifndef project
 	$(error project is not set!)
 else
@@ -123,10 +126,16 @@ else
 endif
 
 
+ASSET_DIRS := $(shell find assets -type d)
+ASSETS_FILES := $(foreach dir,$(ASSET_DIRS),$(wildcard $(dir)/*.py) $(wildcard $(dir)/*.sh))
+
 # Hydrate infra resources
 .PHONY: hydrate
-hydrate: deploy $(INSTALL_TIMESTAMP)
+hydrate: $(HYDRATE_TIMESTAMP)
+
+$(HYDRATE_TIMESTAMP): $(DEPLOY_TIMESTAMP) $(INSTALL_TIMESTAMP) $(ASSETS_FILES)
 	scripts/run_hydrate_infra.sh
+	touch $(HYDRATE_TIMESTAMP)
 
 
 # Create virtual environment
@@ -150,24 +159,28 @@ ${INSTALL_TIMESTAMP}: ${VENV_TIMESTAMP} pyproject.toml
 install: ${INSTALL_TIMESTAMP}
 
 
-# Run phase 1 demo
-.PHONY: run-phase1
-run-phase1: hydrate
-	make -C labs/phase1 install
-	scripts/run_phase1_demo.sh
+# Run a phase demo
+.PHONY: run
+run: hydrate
+ifndef phase
+	$(error phase is not set! e.g., make run phase=1)
+endif
+	make -C labs/phase$(phase) install
+	scripts/run_phase.sh $(phase)
 
-# Run phase 2 demo
-.PHONY: run-phase2
-run-phase2: hydrate
-	make -C labs/phase2 install
-	scripts/run_phase2_demo.sh
+# Run a phase test
+.PHONY: test
+test: hydrate
+ifndef phase
+	$(error phase is not set! e.g., make test phase=1)
+endif
+	make -C labs/phase$(phase) install
+	scripts/test_phase.sh $(phase)
 
 
 # Help
 .PHONY: help
 help:
-	@echo "$(service_slug) - $(service_desc)"
-	@echo ""
 	@echo "Usage:"
 	@echo "  make init                 - Initialize Terraform"
 	@echo "  make deploy               - Deploy Terraform infra"
@@ -182,6 +195,6 @@ help:
 	@echo "  make venv                 - Create virtual environment"
 	@echo "  make install              - Install runtime dependencies"
 	@echo "  make hydrate              - Hydrate infrastructure resources"
-	@echo "  make run-phase1           - Run phase 1 demo"
-	@echo "  make run-phase2           - Run phase 2 demo"
+	@echo "  make run phase=<phase>    - Run a phase demo (e.g., make run phase=1)"
+	@echo "  make test phase=<phase>   - Run a phase test (e.g., make test phase=1)"
 

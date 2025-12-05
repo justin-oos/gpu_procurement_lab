@@ -17,7 +17,14 @@
 # Configuration
 API_PORT=8080
 API_HOST="127.0.0.1"
-PHASE_DIR="labs/phase2"
+# Check if phase number is provided
+if [ -z "$1" ]; then
+    echo "Usage: $0 <phase_number>"
+    exit 1
+fi
+
+PHASE_NUM=$1
+PHASE_DIR="labs/phase$PHASE_NUM"
 VENV_DIR="$PHASE_DIR/venv"
 
 # Colors for output
@@ -31,7 +38,7 @@ NC='\033[0m' # No Color
 
 source $VENV_DIR/bin/activate
 
-echo -e "${BLUE}🚀 Starting Vertex AI L400 Lab 2 Demo Initialization for Phase 2...${NC}"
+echo -e "${BLUE}🚀 Starting Vertex AI L400 Lab 2 Demo Initialization for Phase 1...${NC}"
 
 # --- Step 1: The External World (Mock API) ---
 echo -e "\n${BLUE}[1/2] Launching Mock Spot Market API...${NC}"
@@ -58,10 +65,12 @@ echo "---------------------------------------------------------------"
 
 
 # Run the main agent loop
-python $PHASE_DIR/main.py
+cd "$PHASE_DIR/src/agents"
+adk web
 
 # --- Cleanup ---
 echo -e "\n${BLUE}🧹 Cleaning up...${NC}"
-kill $API_PID
+#kill $API_PID
+fuser -k $API_PORT/tcp > /dev/null 2>&1
 echo "✅ Mock API stopped."
 echo -e "${GREEN}🏁 Demo Complete.${NC}"

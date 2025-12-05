@@ -12,7 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 export PROJECT_ID=${project_id}
 export LOCATION=${location}
 export GOOGLE_CLOUD_REGION=${location}
 export GCS_BUCKET_NAME=${gcs_bucket_name}
+export GOOGLE_GENAI_USE_VERTEXAI="1"
+export GOOGLE_CLOUD_PROJECT=${project_id}
+export GOOGLE_CLOUD_LOCATION=${location}
