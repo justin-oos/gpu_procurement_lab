@@ -87,7 +87,7 @@ update-branch:
 # Clean Terraform Environment
 .PHONY: clean
 clean:
-	rm -rf infra/.terraform infra/.terraform.lock.hcl infra/.terraform.initialized
+	rm -rf infra/.terraform infra/.terraform.lock.hcl infra/.terraform.initialized infra/.terraform.deployed ${BUILD} ${VENV_TIMESTAMP} ${INSTALL_TIMESTAMP}
 
 
 # Initialize Terraform
@@ -110,6 +110,17 @@ endif
 
 .PHONY: deploy
 deploy: $(DEPLOY_TIMESTAMP)
+
+
+# Destroy Terraform infra
+.PHONY: destroy
+destroy: $(INIT_TIMESTAMP)
+ifndef project
+	$(error project is not set!)
+else
+	terraform -chdir=infra destroy -var="project_id=$(project)"
+	make clean
+endif
 
 
 # Hydrate infra resources
@@ -147,7 +158,7 @@ run-phase1: hydrate
 
 # Run phase 2 demo
 .PHONY: run-phase2
-run-phase1: hydrate
+run-phase2: hydrate
 	make -C labs/phase2 install
 	scripts/run_phase2_demo.sh
 
@@ -159,7 +170,8 @@ help:
 	@echo ""
 	@echo "Usage:"
 	@echo "  make init                 - Initialize Terraform"
-	@echo "  make apply                - Apply Terraform changes"
+	@echo "  make deploy               - Deploy Terraform infra"
+	@echo "  make destroy              - Destroy Terraform infra"
 	@echo "  make update-branch        - Refreshes remote Git branches into workspace"
 	@echo "  make get-sa               - Fetch the service account associated with the environment"
 	@echo "  make gcloud-check         - Check the active GCloud login and project"
@@ -169,4 +181,7 @@ help:
 	@echo "  make help                 - Show help"
 	@echo "  make venv                 - Create virtual environment"
 	@echo "  make install              - Install runtime dependencies"
+	@echo "  make hydrate              - Hydrate infrastructure resources"
+	@echo "  make run-phase1           - Run phase 1 demo"
+	@echo "  make run-phase2           - Run phase 2 demo"
 
