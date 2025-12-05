@@ -1,40 +1,43 @@
-## 🛠️ Environment Setup
+# 🛠️ Environment Setup
 
-### Step 1: Terraform
-1. Install Terraform.
-2. Initialize and Apply:
-   ```bash
-   cd infra
-   terraform init
-   terraform apply -var="project_id=YOUR_PROJECT_ID"
-   ```
+## Step 1: Deploy Cloud Resources
 
-### Step 2: Permit Vertex AI Service Account to Access your GCS Bucket
+Deploy Resources via Makefile:
+```bash
+make deploy project=YOUR_PROJECT_ID
+```
 
-TODO: Automate this step:
+## Step 2a: Run a Live Demo for a given Phase
 
-Ensure service account `service-{project_number}@gcp-sa-aiplatform.iam.gserviceaccount.com` has objectViewer permissions on the GCS bucket for Legal.
+To run a specific demo phase, use the **make run** target with the phase number input.
 
+```bash
+make run phase=YOUR_PHASE_NUMBER
+```
 
-### Step 3: Local Setup (For local development and testing)
-1. Set up GCP authentication (For gdrive integration, please follow instructions from GDRIVE_SETUP.md file):
-   ```bash
-   gcloud auth login --update-adc
-   ```
-2. Create and activate a Python virtual environment (Python 3.12 recommended):
-   ```bash
-   python3.12 -m venv venv
-   source venv/bin/activate
-   ```
-3. Install project dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-4. Run the Phase 1 demo:
-   ```bash
-   bash run_phase1_demo.sh
-   ```
-5. Run the Phase 2 demo:
-   ```bash
-   bash run_phase2_demo.sh
-   ```
+For example
+
+```bash
+make run phase=1
+```
+
+## Step 2b: Run a Headless Test for a given Phase
+
+To run a headless test for a specific demo phase, use the **make test** target with the phase number input.
+
+```bash
+make test phase=YOUR_PHASE_NUMBER
+```
+
+For example
+
+```bash
+make test phase=1
+```
+
+## Step 3: Destroy Cloud Resources
+
+Deploy Resources via Makefile:
+```bash
+make destroy
+```
