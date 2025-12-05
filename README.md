@@ -54,7 +54,7 @@ make destroy
 
 ## Common Cloud Infrastructure Resources
 
-![Terraform Resources](/docs/terraform-graph.svg)
+![Terraform Resources](/docs/terraform-graph.png)
 
 
 ## Phase 1 Agents and Tools
