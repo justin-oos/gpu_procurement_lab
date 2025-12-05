@@ -33,7 +33,7 @@ source $VENV_DIR/bin/activate
 
 echo -e "${BLUE}🚀 Starting Vertex AI L400 Lab 2 Demo Initialization for Phase 1...${NC}"
 
-# --- Step 3: The External World (Mock API) ---
+# --- Step 1: The External World (Mock API) ---
 echo -e "\n${BLUE}[1/2] Launching Mock Spot Market API...${NC}"
 
 # Kill any existing process on port 8080 to avoid conflicts
@@ -49,7 +49,7 @@ echo "✅ API running in background (PID: $API_PID). Logs at ./api_logs.txt"
 echo "   Waiting 5 seconds for API to warm up..."
 sleep 5
 
-# --- Step 4: The War Room (Agents) ---
+# --- Step 2: The War Room (Agents) ---
 echo -e "\n${BLUE}[2/2] 🛡️ INITIALIZING INCIDENT COMMAND WAR ROOM...${NC}"
 echo "---------------------------------------------------------------"
 

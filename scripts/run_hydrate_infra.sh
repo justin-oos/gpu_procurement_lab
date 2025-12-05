@@ -28,7 +28,7 @@ NC='\033[0m' # No Color
 # Load load environment
 . scripts/base_env.sh
 
-echo -e "${BLUE}🚀 Starting Vertex AI L400 Lab 2 Demo Initialization for Phase 1...${NC}"
+echo -e "${BLUE}🚀 Starting Vertex AI L400 Lab 2 Demo Initialization for Common Resources...${NC}"
 
 # Create and source the virtual environment
 if [ ! -d "$VENV_DIR" ]; then
