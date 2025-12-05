@@ -202,6 +202,7 @@ help:
 	@echo "  make gcloud-check         - Check the active GCloud login and project"
 	@echo "  make login                - Login to GCloud"
 	@echo "  make set-project          - Configure GCloud project"
+	@echo "  make graph                - Update /docs/ PNG and SVG for Terraform resources"
 	@echo "  make clean                - Clean environment"
 	@echo "  make help                 - Show help"
 	@echo "  make venv                 - Create virtual environment"
