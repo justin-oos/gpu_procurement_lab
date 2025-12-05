@@ -26,9 +26,8 @@ class DatabaseTools:
         self.client = bigquery.Client(project=config.PROJECT_ID)
 
     def run_query(self, sql_query: str) -> List[Dict[str, Any]]:
-        """Executes a standard SQL query."""
-        print(f"\n[🛠️ DB TOOL] Executing SQL:\n    {sql_query}")
-
+        """Executes the given SQL query and returns the list of rows or an error message."""
+        print(f"\n[DB TOOL] Executing SQL:\n    {sql_query}")
         try:
             query_job = self.client.query(sql_query)
             results = [dict(row) for row in query_job.result()]
@@ -40,30 +39,28 @@ class DatabaseTools:
             return [{"error": str(e)}]
 
     def explore_schema(self, table_name: str) -> Dict[str, Any]:
-        """Returns the schema and a sample of 5 rows."""
-
+        """Returns the list of columns for the specified table, and a sample of data from the first 5 rows."""
         print(f"\n[DB TOOL] Exploring Schema for: {table_name}")
         table_name = table_name.replace(";", "").replace("--", "")
-        # Handle cases where LLM passes the full ID vs just the table name
+        # Handle cases where LLM passes the full ID vs just short table name
         if "." in table_name:
-            full_table_id = table_name
+            full_table_name = table_name
         else:
-            full_table_id = f"{config.PROJECT_ID}.{config.DATASET_ID}.{table_name}"
+            full_table_name = f"{config.PROJECT_ID}.{config.DATASET_ID}.{table_name}"
 
         try:
-            table = self.client.get_table(full_table_id)
+            table = self.client.get_table(full_table_name)
             schema_info = [
                 f"{field.name} ({field.field_type})" for field in table.schema
             ]
-            sample_query = f"SELECT * FROM `{full_table_id}` LIMIT 5"
+            sample_query = f"SELECT * FROM `{full_table_name}` LIMIT 5"
             sample_rows = self.run_query(sample_query)
-
             return {
                 "table_name": table_name,
-                "fully_qualified_id": full_table_id,  # Help the agent learn the right name
-                "schema_fields": schema_info,
+                "fully_qualified_table_name": full_table_name,  # Help the agent learn the right name
+                "columns": schema_info,
                 "sample_rows": sample_rows,
-                "note": f"IMPORTANT: When writing SQL, use this table name: `{full_table_id}`",
+                "note": f"Use only the fully_qualified_table_name in all SQL queries",
             }
         except Exception as e:
             print(f"[❌ DB TOOL] Schema Error: {str(e)}")

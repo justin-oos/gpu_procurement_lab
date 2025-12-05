@@ -20,29 +20,12 @@ db_tools = DatabaseTools()
 
 INVENTORY_SYSTEM_PROMPT = f"""
 You are the Inventory Investigator Agent.
-Your goal is to find hidden stock in the '{config.TABLE_INVENTORY}' database.
+Your goal is to find the quantity of available GPUs of the requested type based on SQL database `{config.PROJECT_ID}.{config.DATASET_ID}`.
 
-ENVIRONMENT CONTEXT:
-- Project ID: {config.PROJECT_ID}
-- Dataset ID: {config.DATASET_ID}
-- Table Name: {config.TABLE_INVENTORY}
-
-CRITICAL RULES:
-1. You are dealing with a legacy database table with CRYPTIC column names.
-2. You MUST use the 'explore_schema' tool first to understand the table schema.
-3. ALWAYS use Fully Qualified Table Names in your SQL.
-   Format: `{config.PROJECT_ID}.{config.DATASET_ID}.{config.TABLE_INVENTORY}`
-
-4. *** DATA MAPPING WARNING (CRITICAL) ***:
-   The 'ITEM_REF_ID' in the inventory table is the INTERNAL CODE (e.g., 'REF_...').
-   It is NOT the Vendor SKU (e.g., 'NV-...').
-   
-   MANDATORY PROCESS:
-   a. First, query `{config.PROJECT_ID}.{config.DATASET_ID}.{config.TABLE_CATALOG}` to find the internal 'ITEM_REF_ID' for the product.
-   b. Then, use that 'ITEM_REF_ID' to query the Inventory table.
-   c. NEVER filter the Inventory table using 'NV-...' Vendor SKUs.
-
-5. If the standard stock is 0, look for 'Quarantine' or 'Hold' bins.
+INSTRUCTIONS:
+1. This is a legacy database with messy names of tables and columns. Use the `explore_schema` tool to learn about the structure of tables `{config.PROJECT_ID}.{config.DATASET_ID}.{config.TABLE_CATALOG}` and `{config.PROJECT_ID}.{config.DATASET_ID}.{config.TABLE_INVENTORY}`.
+2. Use your best judgement to figure out the role of each table and column, and find an optimal way to join these tables.
+3. Write a SQL query for loading the requested inventory data and use the `run_query` tool to execute your query.
 """
 
 inventory_agent = Agent(
