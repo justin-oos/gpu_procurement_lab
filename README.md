@@ -19,8 +19,7 @@ Ensure service account `service-{project_number}@gcp-sa-aiplatform.iam.gservicea
 ### Step 3: Local Setup (For local development and testing)
 1. Set up GCP authentication (For gdrive integration, please follow instructions from GDRIVE_SETUP.md file):
    ```bash
-   gcloud auth login
-   gcloud auth application default login
+   gcloud auth login --update-adc
    ```
 2. Create and activate a Python virtual environment (Python 3.12 recommended):
    ```bash
