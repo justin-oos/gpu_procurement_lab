@@ -30,39 +30,23 @@ NC='\033[0m' # No Color
 
 echo -e "${BLUE}🚀 Starting Vertex AI L400 Lab 2 Demo Initialization for Phase 1...${NC}"
 
-# --- Step 1: Environment & Dependencies ---
-echo -e "\n${BLUE}[1/5] Checking Environment...${NC}"
-
-# Check if we are in the right directory
-if [ ! -d "$ROOT_DIR" ]; then
-    echo -e "${RED}❌ Error: Phase directory $ROOT_DIR not found. Run this from the 'scripts' folder, or adjust ROOT_DIR variable.${NC}"
-    exit 1
-fi
-
 # Create and source the virtual environment
 if [ ! -d "$VENV_DIR" ]; then
-    echo "🐍 Creating Python virtual environment in $VENV_DIR..."
-    python3 -m venv $VENV_DIR
+    echo "🐍 Python virtual environment in $VENV_DIR not found, please intiialize the repository..."
+    exit 1
 fi
+source $VENV_DIR/bin/activate
 
-# Upgrade pip
-echo "🐍 Updating Python virtual environment in $VENV_DIR..."
-pip install --upgrade pip
 
-# Install dependencies in editable mode
-echo "📦 Installing package and dependencies..."
-pip install -e "$ROOT_DIR"
-pip install reportlab fastapi uvicorn # Ensure helper libs are present
-
-# --- Step 2: World Building (Data) ---
-echo -e "\n${BLUE}[2/5] Building the 'Opaque' Database...${NC}"
+# --- Step 1: World Building (Data) ---
+echo -e "\n${BLUE}[1/2] Building the 'Opaque' Database...${NC}"
 python assets/setup_db.py
 if [ $? -ne 0 ]; then
     echo -e "${RED}❌ Database setup failed. Check credentials/permissions.${NC}"
     exit 1
 fi
 
-echo -e "\n${BLUE}[3/5] creating 'Conflicting' Legal Documents...${NC}"
+echo -e "\n${BLUE}[2/2] creating 'Conflicting' Legal Documents...${NC}"
 python assets/setup_gcs.py
 if [ $? -ne 0 ]; then
     echo -e "${RED}❌ GCS setup failed. Check bucket permissions.${NC}"

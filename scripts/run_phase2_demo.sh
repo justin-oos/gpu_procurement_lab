@@ -17,8 +17,8 @@
 # Configuration
 API_PORT=8080
 API_HOST="127.0.0.1"
-PHASE_DIR="../labs/phase2"
-VENV_DIR="$PHASE_DIR/.venv"
+PHASE_DIR="labs/phase2"
+VENV_DIR="$PHASE_DIR/venv"
 
 # Colors for output
 GREEN='\033[0;32m'
@@ -27,18 +27,20 @@ RED='\033[0;31m'
 NC='\033[0m' # No Color
 
 # Load load environment
-. base_env.sh
+. scripts/base_env.sh
 
-echo -e "${BLUE}🚀 Starting Vertex AI L400 Lab 2 Demo Initialization for Phase 2...${NC}"
+source $VENV_DIR/bin/activate
+
+echo -e "${BLUE}🚀 Starting Vertex AI L400 Lab 2 Demo Initialization for Phase 1...${NC}"
 
 # --- Step 3: The External World (Mock API) ---
-echo -e "\n${BLUE}[4/5] Launching Mock Spot Market API...${NC}"
+echo -e "\n${BLUE}[1/2] Launching Mock Spot Market API...${NC}"
 
 # Kill any existing process on port 8080 to avoid conflicts
 fuser -k $API_PORT/tcp > /dev/null 2>&1
 
 # Start API in background
-cd ../assets/mock_api
+cd assets/mock_api
 uvicorn main:app --host $API_HOST --port $API_PORT > ../../api_logs.txt 2>&1 &
 API_PID=$!
 cd ../..
@@ -48,7 +50,7 @@ echo "   Waiting 5 seconds for API to warm up..."
 sleep 5
 
 # --- Step 4: The War Room (Agents) ---
-echo -e "\n${BLUE}[5/5] 🛡️ INITIALIZING INCIDENT COMMAND WAR ROOM...${NC}"
+echo -e "\n${BLUE}[2/2] 🛡️ INITIALIZING INCIDENT COMMAND WAR ROOM...${NC}"
 echo "---------------------------------------------------------------"
 
 

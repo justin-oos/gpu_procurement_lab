@@ -17,6 +17,9 @@ dependencies = [
     "pandas",
     "pydantic",
     "pytest",
+    "reportlab",
+    "fastapi",
+    "uvicorn",
     # Add your ADK specific dependency here if it's a public package,
     # otherwise it might need to be installed separately.
     "google-cloud-bigquery>=3.10.0",

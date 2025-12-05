@@ -23,9 +23,16 @@ ifndef region
     override region = $(LOCATION)
 endif
 
-ifndef gcs_bucket_name
-    override bucket_name = $(GCS_BUCKET_NAME)
-endif
+
+# Define Variables
+VENV = venv
+BUILD = build
+PYTHON = $(VENV)/bin/python
+PIP = $(VENV)/bin/pip
+
+# Define Timestamped Files
+VENV_TIMESTAMP = ${BUILD}/.make.venv.done
+INSTALL_TIMESTAMP = ${BUILD}/.make.install.done
 
 
 TERRAFORM_FILES := $(wildcard infra/*.tf)
@@ -36,7 +43,6 @@ DEPLOY_TIMESTAMP := infra/.terraform.deployed
 # Default target
 .PHONY: all
 all: help
-
 
 
 # Check the Active GCloud Login
@@ -85,15 +91,16 @@ clean:
 
 
 # Initialize Terraform
-$(INIT_TIMESTAMP): $(TERRAFORM_FILES)
+$(INIT_TIMESTAMP): infra/*.tf
 	terraform -chdir=infra init
 	touch $(INIT_TIMESTAMP)
 
 .PHONY: init
 init: $(INIT_TIMESTAMP)
 
+
 # Deploy Terraform infra
-$(DEPLOY_TIMESTAMP): init $(TERRAFORM_FILES)
+$(DEPLOY_TIMESTAMP): $(INIT_TIMESTAMP) infra/*.tf
 ifndef project
 	$(error project is not set!)
 else
@@ -104,16 +111,45 @@ endif
 .PHONY: deploy
 deploy: $(DEPLOY_TIMESTAMP)
 
-# Hydrate infra resources
-.PHONY: hydrate
-hydrate: deploy
-	scripts/run_hydrate_infra.sh
 
 # Hydrate infra resources
-.PHONY: run-demo1
-run-demo1: hydrate
+.PHONY: hydrate
+hydrate: deploy $(INSTALL_TIMESTAMP)
+	scripts/run_hydrate_infra.sh
+
+
+# Create virtual environment
+${VENV_TIMESTAMP}:
+	echo "🐍 Creating Python virtual environment in $(VENV)..."
+	python3 -m venv $(VENV)
+	mkdir -p ${BUILD}
+	${PIP} install --upgrade pip
+	touch ${VENV_TIMESTAMP}
+
+.PHONY: venv
+venv: ${VENV_TIMESTAMP}
+
+
+# Install dependencies
+${INSTALL_TIMESTAMP}: ${VENV_TIMESTAMP} pyproject.toml
+	${PIP} install -e .
+	touch ${INSTALL_TIMESTAMP}
+
+.PHONY: install
+install: ${INSTALL_TIMESTAMP}
+
+
+# Run phase 1 demo
+.PHONY: run-phase1
+run-phase1: hydrate
 	make -C labs/phase1 install
-#	scripts/run_pphase1_demo.sh
+	scripts/run_phase1_demo.sh
+
+# Run phase 2 demo
+.PHONY: run-phase2
+run-phase1: hydrate
+	make -C labs/phase2 install
+	scripts/run_phase2_demo.sh
 
 
 # Help
@@ -131,3 +167,6 @@ help:
 	@echo "  make set-project          - Configure GCloud project"
 	@echo "  make clean                - Clean environment"
 	@echo "  make help                 - Show help"
+	@echo "  make venv                 - Create virtual environment"
+	@echo "  make install              - Install runtime dependencies"
+
