@@ -55,7 +55,7 @@ resource "google_bigquery_table" "inventory" {
   },
   {
     "name": "STATUS_FLAG_9",
-    "type": "STRING",
+    "type": "INTEGER",
     "mode": "NULLABLE",
     "description": "Status Flag: 0=OK, 9=Legal Hold"
   }

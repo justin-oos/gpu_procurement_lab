@@ -78,13 +78,12 @@ def setup_gcs():
     client = storage.Client(project=config.PROJECT_ID)
     bucket_name = config.BUCKET_NAME
 
-    # 1. Create Bucket if not exists
+    # 1. Check if Bucket exists
     try:
         bucket = client.bucket(bucket_name)
         if not bucket.exists():
-            print(f"🪣 Creating bucket {bucket_name}...")
-            bucket = client.create_bucket(bucket_name, location=config.REGION)
-            print(f"✅ Bucket {bucket_name} created.")
+            print(f"❌ Bucket {bucket_name} does not exist.  Please initialize the environment.")
+            return
         else:
             print(f"✅ Bucket {bucket_name} already exists.")
     except Exception as e:
