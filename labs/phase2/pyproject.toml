@@ -32,9 +32,9 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-    "pytest",
-    "black",
-    "ruff"
+  "pytest",
+  "black",
+  "ruff"
 ]
 
 # This section is critical for the 'src' layout
@@ -48,5 +48,5 @@ pythonpath = [
   "src"
 ]
 testpaths = [
-    "tests",
+  "tests",
 ]
